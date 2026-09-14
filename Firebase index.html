@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>ModStore · Android App Marketplace</title>
+<meta name="description" content="Discover and download the latest Android apps from ModStore.">
+<meta name="theme-color" content="#080b10">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2300e676'/%3E%3Cstop offset='1' stop-color='%2300d2ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M20 46V18h8l8 14 8-14h8v28h-7V30l-7 12h-4l-7-12v16z' fill='%23051614'/%3E%3C/svg%3E">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   [CSS-01] RESET
+   ═══════════════════════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+img{max-width:100%;display:block}
+button,input{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+a{color:inherit;text-decoration:none}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   [CSS-02] THEME TOKENS
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#080b10;--bg-soft:#0c1119;--surface:#10141c;--surface-2:#171b25;--surface-3:#1e2330;
+  --border:rgba(255,255,255,.06);--border-strong:rgba(255,255,255,.11);
+  --text:#ffffff;--text-dim:#c4cfe0;--text-mute:#7c8ba3;
+  --accent:#00e676;--accent-2:#00d2ff;
+  --accent-grad:linear-gradient(135deg,#00e676 0%,#00d2ff 100%);
+  --accent-soft:rgba(0,230,118,.14);--accent-on:#051614;
+  --accent-glow:rgba(0,230,118,.30);--accent-text:#00e676;
+  --danger:#ef4444;--warn:#f59e0b;--success:#00e676;
+  --r-sm:12px;--r:18px;--r-lg:26px;--r-xl:32px;
+  --shadow-sm:0 2px 10px rgba(0,0,0,.32);
+  --shadow:0 10px 34px rgba(0,0,0,.48);
+  --shadow-lg:0 24px 70px rgba(0,0,0,.62);
+  --header-h:64px;
+  --ease:cubic-bezier(.22,.8,.24,1);
+}
+[data-theme="light"]{
+  --bg:#eef2f7;--bg-soft:#e7ecf3;--surface:#ffffff;--surface-2:#eef2f7;--surface-3:#dde5ef;
+  --border:rgba(12,22,45,.09);--border-strong:rgba(12,22,45,.16);
+  --text:#0a1224;--text-dim:#414d67;--text-mute:#7c8ba3;
+  --accent:#00a844;--accent-2:#008fc9;
+  --accent-grad:linear-gradient(135deg,#00a844 0%,#008fc9 100%);
+  --accent-soft:rgba(0,168,68,.12);--accent-on:#ffffff;
+  --accent-glow:rgba(0,168,68,.28);--accent-text:#00743a;
+  --shadow-sm:0 2px 10px rgba(20,32,60,.08);
+  --shadow:0 10px 34px rgba(20,32,60,.12);
+  --shadow-lg:0 24px 70px rgba(20,32,60,.18);
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans",Arial,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.5;
+  min-height:100vh;min-height:100dvh;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+  transition:background-color .3s var(--ease),color .3s var(--ease);
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(900px 500px at 12% -8%,rgba(0,230,118,.10),transparent 60%),
+    radial-gradient(800px 500px at 100% 0%,rgba(0,210,255,.08),transparent 55%);
+}
+[data-theme="light"] body::before{opacity:.6}
+::selection{background:rgba(0,230,118,.28)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:999px;border:2px solid var(--bg)}
+.skip{position:absolute;left:-9999px;top:0;background:var(--accent);color:var(--accent-on);padding:10px 16px;z-index:999}
+.skip:focus{left:8px;top:8px;border-radius:8px}
+
+/* [CSS-04] HEADER */
+.header{
+  position:sticky;top:0;z-index:100;height:var(--header-h);
+  background:rgba(8,11,16,.82);
+  -webkit-backdrop-filter:saturate(180%) blur(22px);
+  backdrop-filter:saturate(180%) blur(22px);
+  border-bottom:1px solid var(--border);
+  transition:background-color .3s var(--ease),border-color .3s var(--ease);
+}
+[data-theme="light"] .header{background:rgba(255,255,255,.85)}
+.header-inner{max-width:1440px;height:100%;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;flex-shrink:0;font-weight:800;letter-spacing:-.02em;border-radius:14px;padding:4px;margin-left:-4px;transition:transform .2s var(--ease)}
+.brand:active{transform:scale(.96)}
+.brand-mark{width:34px;height:34px;border-radius:11px;background:var(--accent-grad);color:var(--accent-on);display:grid;place-items:center;font-weight:900;font-size:17px;box-shadow:0 6px 18px var(--accent-glow);flex-shrink:0}
+.brand-name{font-size:17px;background:var(--accent-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+@media (max-width:420px){.brand-name{display:none}}
+.search{flex:1;max-width:520px;margin:0 auto;position:relative;display:flex;align-items:center}
+.search-icon{position:absolute;left:13px;width:18px;height:18px;color:var(--text-mute);pointer-events:none;transition:color .2s}
+.search input{width:100%;height:42px;padding:0 40px;border-radius:14px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);outline:none;font-size:15px;transition:border-color .2s,background .2s,box-shadow .2s;-webkit-appearance:none;appearance:none}
+.search input::-webkit-search-cancel-button{display:none}
+.search input::placeholder{color:var(--text-mute)}
+.search input:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 4px var(--accent-soft)}
+.search:focus-within .search-icon{color:var(--accent)}
+.search-clear{position:absolute;right:8px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:var(--text-dim);background:var(--surface-3);font-size:15px;line-height:1}
+.search-clear:hover{color:var(--text);background:var(--border-strong)}
+.icon-btn{width:42px;height:42px;flex-shrink:0;border-radius:13px;display:grid;place-items:center;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);transition:background .2s,color .2s,transform .15s var(--ease),border-color .2s}
+.icon-btn:hover{color:var(--text);background:var(--surface-3);border-color:var(--border-strong)}
+.icon-btn:active{transform:scale(.94)}
+.icon-btn svg{width:19px;height:19px}
+[data-theme="dark"] .icon-sun{display:none}
+[data-theme="light"] .icon-moon{display:none}
+
+/* [CSS-05] VIEW */
+#view{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:20px 0 60px;min-height:calc(100vh - var(--header-h))}
+.view-detail{padding-top:0}
+.view-generating{padding:0}
+
+/* [CSS-06] SECTION HEAD */
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:4px 20px 14px;margin-top:8px}
+.section-head h2{margin:0;font-size:20px;font-weight:800;letter-spacing:-.025em}
+.section-head .count{font-size:13px;font-weight:600;color:var(--text-mute);background:var(--surface-2);border:1px solid var(--border);padding:3px 10px;border-radius:999px}
+
+/* [CSS-07] BANNERS */
+.banner{margin:0 20px 14px;padding:11px 14px;border-radius:13px;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:9px}
+.banner-warn{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.28);color:#fbbf24}
+.banner-info{background:var(--accent-soft);border:1px solid rgba(0,230,118,.28);color:var(--accent)}
+[data-theme="light"] .banner-warn{color:#b45309}
+[data-theme="light"] .banner-info{color:var(--accent-text)}
+
+/* [CSS-08] HERO */
+.hero{position:relative;margin:4px 16px 26px;border-radius:var(--r-xl);overflow:hidden;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.hero-track{display:flex;transition:transform .55s var(--ease);will-change:transform}
+.hero-slide{flex:0 0 100%;min-width:100%;position:relative;min-height:300px;display:flex;align-items:flex-end;overflow:hidden}
+.hero-bg{position:absolute;inset:-25%;background-size:cover;background-position:center;filter:blur(58px) saturate(160%);transform:scale(1.15);opacity:.62;pointer-events:none}
+.hero-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,8,12,.18) 0%,rgba(6,8,12,.62) 52%,rgba(6,8,12,.94) 100%),linear-gradient(90deg,rgba(6,8,12,.72) 0%,rgba(6,8,12,.15) 62%);pointer-events:none}
+.hero-content{position:relative;z-index:2;width:100%;padding:28px 24px;display:flex;align-items:flex-end;gap:20px;color:#fff}
+.hero-icon{width:82px;height:82px;border-radius:22px;object-fit:cover;flex-shrink:0;box-shadow:0 14px 40px rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06)}
+.hero-text{min-width:0;flex:1}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);padding:4px 10px;border-radius:999px;margin-bottom:10px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.hero-badge .pulse{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(0,230,118,.6);animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(0,230,118,.6)}70%{box-shadow:0 0 0 8px rgba(0,230,118,0)}100%{box-shadow:0 0 0 0 rgba(0,230,118,0)}}
+.hero-title{margin:0 0 8px;font-size:clamp(24px,5.4vw,42px);font-weight:900;letter-spacing:-.035em;line-height:1.06;text-shadow:0 4px 24px rgba(0,0,0,.5);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.hero-desc{margin:0 0 16px;font-size:clamp(13.5px,2.6vw,15.5px);color:rgba(255,255,255,.82);max-width:560px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;text-shadow:0 2px 14px rgba(0,0,0,.5)}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.chip-glass{font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);color:#fff;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.hero-cta{display:inline-flex;align-items:center;gap:9px;height:46px;padding:0 24px;border-radius:15px;background:var(--accent-grad);color:var(--accent-on);font-weight:700;font-size:15px;box-shadow:0 10px 30px var(--accent-glow);transition:transform .18s var(--ease),box-shadow .18s}
+.hero-cta:hover{transform:translateY(-2px);box-shadow:0 14px 38px var(--accent-glow)}
+.hero-cta:active{transform:translateY(0) scale(.97)}
+.hero-cta svg{width:17px;height:17px}
+.hero-nav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(10,12,18,.55);border:1px solid rgba(255,255,255,.16);color:#fff;font-size:22px;line-height:1;z-index:5;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:0;transition:opacity .25s,background .2s}
+.hero:hover .hero-nav{opacity:1}
+.hero-nav:hover{background:rgba(10,12,18,.82)}
+.hero-prev{left:14px}.hero-next{right:14px}
+@media (hover:none){.hero-nav{display:none}}
+.hero-dots{position:absolute;bottom:16px;right:22px;display:flex;gap:6px;z-index:5}
+.hero-dot{width:7px;height:7px;border-radius:999px;background:rgba(255,255,255,.36);transition:width .35s var(--ease),background .25s;padding:0}
+.hero-dot.active{width:22px;background:var(--accent)}
+@media (max-width:640px){
+  .hero{margin:4px 12px 22px;border-radius:24px}
+  .hero-slide{min-height:400px}
+  .hero-content{padding:22px 18px;flex-direction:column;align-items:flex-start;gap:14px}
+  .hero-icon{width:66px;height:66px;border-radius:18px}
+  .hero-dots{bottom:14px;right:18px}
+  .hero-cta{width:100%;justify-content:center}
+}
+
+/* [CSS-09] CATEGORIES */
+.cats{display:flex;gap:8px;overflow-x:auto;padding:0 20px 20px;scrollbar-width:none;-ms-overflow-style:none;scroll-behavior:smooth}
+.cats::-webkit-scrollbar{display:none}
+.cat{flex-shrink:0;padding:9px 16px;border-radius:999px;font-size:13.5px;font-weight:600;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);white-space:nowrap;transition:background .2s,color .2s,border-color .2s,transform .15s var(--ease)}
+.cat:hover{color:var(--text);border-color:var(--border-strong)}
+.cat:active{transform:scale(.95)}
+.cat.active{background:var(--accent-grad);border-color:transparent;color:var(--accent-on);box-shadow:0 6px 20px var(--accent-glow)}
+
+/* [CSS-10] GRID */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:0 16px}
+@media (min-width:560px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding:0 20px}}
+@media (min-width:880px){.grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}}
+@media (min-width:1180px){.grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media (min-width:1480px){.grid{grid-template-columns:repeat(6,minmax(0,1fr))}}
+
+/* [CSS-11] APP CARD */
+.app-card{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:16px 12px 14px;border-radius:var(--r);background:var(--surface);border:1px solid var(--border);transition:transform .22s var(--ease),border-color .22s,background .22s,box-shadow .22s;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.app-card::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(160deg,rgba(0,230,118,.10),transparent 55%);opacity:0;transition:opacity .22s;pointer-events:none}
+.app-card:hover{transform:translateY(-4px);border-color:rgba(0,230,118,.38);box-shadow:0 14px 34px rgba(0,0,0,.42)}
+.app-card:hover::after{opacity:1}
+.app-card:active{transform:translateY(-1px) scale(.985)}
+.app-icon-wrap{position:relative;width:62px;height:62px;flex-shrink:0;border-radius:17px;overflow:hidden;background:var(--accent-grad);display:grid;place-items:center;box-shadow:0 8px 22px rgba(0,0,0,.32)}
+@media (min-width:880px){.app-icon-wrap{width:68px;height:68px;border-radius:19px}}
+.app-icon-fallback{position:absolute;inset:0;display:grid;place-items:center;font-weight:900;font-size:26px;color:var(--accent-on);letter-spacing:-.02em;text-shadow:0 2px 8px rgba(0,0,0,.15)}
+.app-icon{position:relative;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.app-name{font-size:13.5px;font-weight:700;line-height:1.3;letter-spacing:-.01em;width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word}
+.app-meta{font-size:11.5px;font-weight:600;color:var(--text-mute);display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;max-width:100%}
+.app-meta .dot{opacity:.5}
+.app-meta .cat-tag{color:var(--accent-text);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* [CSS-12] SKELETON */
+.sk{background:linear-gradient(90deg,var(--surface-2) 0%,var(--surface-3) 50%,var(--surface-2) 100%);background-size:220% 100%;animation:shimmer 1.4s ease-in-out infinite;border-radius:8px}
+@keyframes shimmer{0%{background-position:120% 0}100%{background-position:-120% 0}}
+.sk-hero{margin:4px 16px 26px;height:320px;border-radius:var(--r-xl)}
+@media (max-width:640px){.sk-hero{height:400px;margin:4px 12px 22px}}
+.sk-chips{display:flex;gap:8px;padding:0 20px 20px;overflow:hidden}
+.sk-chip{height:38px;width:92px;border-radius:999px;flex-shrink:0}
+.sk-card{border-radius:var(--r);border:1px solid var(--border);background:var(--surface);padding:16px 12px 14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.sk-icon{width:62px;height:62px;border-radius:17px}
+.sk-line{height:11px;width:78%}
+.sk-line.short{width:48%}
+.sk-section-title{height:18px;width:150px;margin:8px 20px 14px;border-radius:8px}
+
+/* [CSS-13] EMPTY STATE */
+.empty-state{text-align:center;padding:60px 24px 80px;max-width:520px;margin:0 auto}
+.empty-icon{width:76px;height:76px;border-radius:24px;display:grid;place-items:center;margin:0 auto 20px;background:var(--surface-2);border:1px solid var(--border);font-size:34px}
+.empty-state h2{margin:0 0 8px;font-size:21px;font-weight:800;letter-spacing:-.02em}
+.empty-state p{margin:0 0 22px;color:var(--text-dim);font-size:14.5px}
+.empty-state .diag{margin-top:18px;text-align:left;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;color:var(--text-mute);background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow:auto}
+
+/* [CSS-14] BUTTONS */
+.btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:48px;padding:0 26px;border-radius:15px;background:var(--accent-grad);color:var(--accent-on);font-weight:700;font-size:15px;box-shadow:0 10px 28px var(--accent-glow);transition:transform .18s var(--ease),box-shadow .18s,opacity .2s}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 36px var(--accent-glow)}
+.btn-primary:active{transform:translateY(0) scale(.97)}
+.btn-primary:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-primary svg{width:18px;height:18px}
+.btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:48px;padding:0 22px;border-radius:15px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);font-weight:700;font-size:15px;transition:background .2s,border-color .2s,transform .15s var(--ease)}
+.btn-ghost:hover{background:var(--surface-3);border-color:var(--border-strong)}
+.btn-ghost:active{transform:scale(.97)}
+.btn-ghost svg{width:18px;height:18px}
+
+/* [CSS-15] DETAIL HERO */
+.detail-hero{position:relative;padding:0 0 26px;overflow:hidden;isolation:isolate}
+.detail-hero-bg{position:absolute;inset:-30% -20% 0 -20%;background-size:cover;background-position:center;filter:blur(80px) saturate(170%);opacity:.5;z-index:-1;pointer-events:none}
+.detail-hero-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,8,12,.55) 0%,rgba(6,8,12,.2) 40%,var(--bg) 100%);z-index:-1;pointer-events:none}
+[data-theme="light"] .detail-hero-shade{background:linear-gradient(180deg,rgba(255,255,255,.2) 0%,rgba(238,242,247,.7) 55%,var(--bg) 100%)}
+.detail-topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;gap:12px}
+.back-btn{display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 16px 0 13px;border-radius:13px;background:rgba(10,12,18,.55);border:1px solid rgba(255,255,255,.14);color:#fff;font-weight:600;font-size:14px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);transition:background .2s,transform .15s var(--ease)}
+[data-theme="light"] .back-btn{background:rgba(255,255,255,.75);border-color:rgba(12,22,45,.1);color:var(--text)}
+.back-btn:hover{background:rgba(10,12,18,.75)}
+[data-theme="light"] .back-btn:hover{background:#fff}
+.back-btn:active{transform:scale(.96)}
+.back-btn svg{width:17px;height:17px}
+.detail-share{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:rgba(10,12,18,.55);border:1px solid rgba(255,255,255,.14);color:#fff;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);transition:background .2s,transform .15s var(--ease)}
+[data-theme="light"] .detail-share{background:rgba(255,255,255,.75);border-color:rgba(12,22,45,.1);color:var(--text)}
+.detail-share:hover{background:rgba(10,12,18,.75)}
+[data-theme="light"] .detail-share:hover{background:#fff}
+.detail-share:active{transform:scale(.94)}
+.detail-share svg{width:18px;height:18px}
+.detail-main{display:flex;align-items:flex-end;gap:20px;padding:6px 20px 0;color:#fff}
+[data-theme="light"] .detail-main{color:var(--text)}
+@media (max-width:640px){.detail-main{flex-direction:column;align-items:flex-start;gap:14px}}
+.detail-icon-wrap{width:104px;height:104px;flex-shrink:0;border-radius:26px;overflow:hidden;background:var(--accent-grad);display:grid;place-items:center;box-shadow:0 18px 46px rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.16);position:relative}
+[data-theme="light"] .detail-icon-wrap{border-color:rgba(12,22,45,.08)}
+.detail-icon-wrap .app-icon-fallback{font-size:44px}
+@media (max-width:640px){.detail-icon-wrap{width:84px;height:84px;border-radius:22px}.detail-icon-wrap .app-icon-fallback{font-size:36px}}
+.detail-info{min-width:0;flex:1;padding-bottom:4px}
+.detail-name{margin:0 0 8px;font-size:clamp(24px,5vw,38px);font-weight:900;letter-spacing:-.035em;line-height:1.08;word-break:break-word}
+.detail-sub{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:rgba(255,255,255,.75)}
+[data-theme="light"] .detail-sub{color:var(--text-dim)}
+.detail-sub .sep{opacity:.4}
+.detail-sub .dev{color:var(--accent-text)}
+
+/* [CSS-16] DETAIL ACTIONS */
+.detail-actions{display:flex;gap:10px;padding:22px 20px 0;max-width:560px}
+.detail-actions .btn-primary{flex:1}
+@media (max-width:480px){.detail-actions{flex-direction:column}.detail-actions .btn-ghost{width:100%}}
+
+/* [CSS-17] STATS */
+.detail-stats{display:grid;grid-template-columns:repeat(4,1fr);margin:24px 20px 0;border-radius:var(--r);background:var(--surface);border:1px solid var(--border);overflow:hidden}
+.stat{padding:16px 10px;text-align:center;border-right:1px solid var(--border);min-width:0}
+.stat:last-child{border-right:0}
+.stat-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mute);margin-bottom:6px}
+.stat-value{font-size:14px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:560px){
+  .detail-stats{grid-template-columns:repeat(2,1fr)}
+  .stat:nth-child(2){border-right:0}
+  .stat:nth-child(1),.stat:nth-child(2){border-bottom:1px solid var(--border)}
+}
+
+/* [CSS-18] DETAIL SECTIONS */
+.detail-section{padding:28px 20px 0}
+.detail-section h2{margin:0 0 14px;font-size:18px;font-weight:800;letter-spacing:-.02em}
+.detail-desc{margin:0;font-size:15px;line-height:1.68;color:var(--text-dim);white-space:pre-wrap;word-break:break-word;max-width:760px}
+.detail-desc.clamped{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.read-more{margin-top:10px;color:var(--accent-text);font-weight:700;font-size:14px;padding:4px 0}
+.shots{display:flex;gap:12px;overflow-x:auto;padding:0 20px 8px;margin:0 -20px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.shots::-webkit-scrollbar{display:none}
+.shot{flex:0 0 auto;width:190px;aspect-ratio:9/16;border-radius:16px;object-fit:cover;background:var(--surface-2);border:1px solid var(--border);scroll-snap-align:start}
+@media (min-width:700px){.shot{width:220px}}
+.feature-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;max-width:760px}
+.feature-list li{display:flex;align-items:flex-start;gap:11px;font-size:14.5px;color:var(--text-dim);line-height:1.55}
+.feature-list li::before{content:"";flex-shrink:0;width:7px;height:7px;margin-top:8px;border-radius:50%;background:var(--accent-grad)}
+.changelog{font-size:14.5px;line-height:1.68;color:var(--text-dim);white-space:pre-wrap;word-break:break-word;max-width:760px;padding:16px;border-radius:var(--r);background:var(--surface);border:1px solid var(--border)}
+
+/* [CSS-19] GENERATING PAGE */
+.gen-page{min-height:calc(100vh - var(--header-h));background:var(--bg);color:var(--text-dim);padding:24px 16px 40px;display:flex;justify-content:center;animation:genFade .35s var(--ease) both}
+@keyframes genFade{from{opacity:0}to{opacity:1}}
+.gen-container{width:100%;max-width:520px}
+.gen-header-card{background:var(--accent-grad);color:var(--accent-on);border-radius:20px;padding:24px 22px;margin-bottom:20px;box-shadow:0 12px 40px var(--accent-glow);position:relative;overflow:hidden}
+.gen-header-card::after{content:"";position:absolute;inset:-50% -20% auto auto;width:220px;height:220px;background:radial-gradient(circle,rgba(255,255,255,.35),transparent 60%);pointer-events:none}
+.gen-app-name{font-size:clamp(22px,5.4vw,30px);font-weight:900;letter-spacing:-.03em;line-height:1.1;margin-bottom:6px;word-break:break-word}
+.gen-app-tagline{font-size:14px;font-weight:700;opacity:.82;letter-spacing:-.01em}
+.gen-thanks{font-size:15px;line-height:1.65;color:var(--text-dim);margin:0 0 20px;padding:0 4px}
+.gen-thanks .gen-hl{color:var(--accent-text);font-weight:800}
+.gen-progress-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px 20px;margin-bottom:16px}
+.gen-file-name{font-size:15.5px;font-weight:800;color:var(--text);margin-bottom:16px;letter-spacing:-.01em}
+.gen-progress-track{width:100%;height:12px;background:var(--surface-2);border-radius:999px;overflow:hidden;margin-bottom:14px;box-shadow:inset 0 1px 2px rgba(0,0,0,.35)}
+.gen-progress-fill{height:100%;width:0%;border-radius:999px;background:var(--accent-grad);box-shadow:0 0 14px var(--accent-glow);will-change:width}
+.gen-status{display:flex;align-items:center;justify-content:space-between;font-size:13.5px;color:var(--text-mute);font-weight:600}
+.gen-count{color:var(--accent-text);font-weight:800;font-variant-numeric:tabular-nums;font-size:15px}
+.gen-report{display:block;width:100%;margin-top:14px;padding:11px 14px;text-align:center;font-size:13px;font-weight:700;color:var(--text-mute);background:var(--surface-2);border:1px solid var(--border);border-radius:12px;transition:color .2s,border-color .2s}
+.gen-report:hover{color:var(--text-dim);border-color:var(--border-strong)}
+.gen-ready-card{background:var(--surface);border:2px solid var(--accent);border-radius:18px;padding:26px 22px 22px;margin-bottom:16px;text-align:center;box-shadow:0 0 30px var(--accent-glow);animation:genPop .45s var(--ease) both}
+@keyframes genPop{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.gen-ready-icon{width:64px;height:64px;margin:0 auto 16px;border-radius:50%;background:var(--accent-soft);border:2px solid var(--accent);display:grid;place-items:center;color:var(--accent);font-size:32px;font-weight:900;animation:genPop .5s var(--ease) both}
+.gen-ready-title{margin:0 0 8px;font-size:19px;font-weight:900;color:var(--text);letter-spacing:-.02em}
+.gen-ready-text{margin:0 0 20px;font-size:14px;color:var(--text-mute);line-height:1.55}
+.gen-download-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:17px 20px;border-radius:14px;background:var(--accent-grad);color:var(--accent-on);font-weight:900;font-size:16px;text-decoration:none;box-shadow:0 10px 32px var(--accent-glow);transition:transform .18s var(--ease),box-shadow .18s;letter-spacing:-.01em;border:0;cursor:pointer}
+.gen-download-btn:hover{transform:translateY(-2px);box-shadow:0 14px 40px var(--accent-glow)}
+.gen-download-btn:active{transform:translateY(0) scale(.98)}
+.gen-download-btn:disabled,.gen-download-btn.is-loading{opacity:.7;pointer-events:none}
+.gen-download-btn svg{width:18px;height:18px}
+.gen-cancel{display:block;width:100%;margin-top:8px;padding:14px;border-radius:12px;font-size:14px;font-weight:700;color:var(--text-mute);background:transparent;transition:color .2s,background .2s}
+.gen-cancel:hover{color:var(--text);background:var(--surface-2)}
+.gen-note{margin-top:18px;padding:14px 16px;border-radius:14px;background:var(--accent-soft);border:1px solid rgba(0,230,118,.20);font-size:13px;line-height:1.6;color:var(--text-dim)}
+.gen-note strong{color:var(--accent-text);font-weight:800}
+
+/* [CSS-20] FOOTER */
+.footer{position:relative;z-index:1;text-align:center;padding:34px 20px 44px;border-top:1px solid var(--border);margin-top:40px}
+.footer p{margin:0;font-size:12.5px;color:var(--text-mute)}
+.footer a{color:var(--accent-text);font-weight:600}
+
+/* [CSS-21] TOAST */
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,90px);z-index:300;background:var(--surface-3);color:var(--text);border:1px solid var(--border-strong);padding:12px 20px;border-radius:14px;font-size:13.5px;font-weight:600;box-shadow:var(--shadow-lg);opacity:0;transition:transform .35s var(--ease),opacity .3s;pointer-events:none;max-width:calc(100vw - 40px);text-align:center}
+.toast.show{transform:translate(-50%,0);opacity:1}
+
+/* [CSS-22] ANIMATIONS */
+.fade-in{animation:fadeIn .4s var(--ease) both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#view">Skip to content</a>
+
+<header class="header">
+  <div class="header-inner">
+    <a class="brand" href="/appstore" data-link aria-label="ModStore home">
+      <span class="brand-mark">M</span>
+      <span class="brand-name">ModStore</span>
+    </a>
+    <div class="search" role="search">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+      </svg>
+      <input id="search-input" type="search" placeholder="Search apps…" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="Search apps">
+      <button class="search-clear" id="search-clear" type="button" aria-label="Clear search" hidden>✕</button>
+    </div>
+    <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle theme" title="Toggle theme">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>
+      </svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="4.2"/>
+        <path d="M12 2v2.4M12 19.6V22M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M2 12h2.4M19.6 12H22M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<main id="view" aria-live="polite"></main>
+
+<footer class="footer">
+  <p>ModStore · Powered by <a href="https://firebase.google.com" target="_blank" rel="noopener">Firebase</a></p>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- ═════════════════════════════════════════════════════════════════════════
+     FIREBASE + APP CODE
+     ═════════════════════════════════════════════════════════════════════════ -->
+<script type="module">
+/* [FB] Firebase SDK (v10 modular) */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getAnalytics, isSupported as analyticsSupported } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+/* [FB-01] Aapki Firebase config */
+const firebaseConfig = {
+  apiKey: "AIzaSyDBwqLtcL4Nf-svTIzikVlI0tsiH3nkfOo",
+  authDomain: "sbmodhub.firebaseapp.com",
+  projectId: "sbmodhub",
+  storageBucket: "sbmodhub.firebasestorage.app",
+  messagingSenderId: "240983238013",
+  appId: "1:240983238013:web:492d9bad7eef1b1eb69814",
+  measurementId: "G-B9EM5M00Y4"
+};
+
+/* [FB-02] Init Firebase + Analytics */
+const fbApp = initializeApp(firebaseConfig);
+const db = getDatabase(fbApp);
+analyticsSupported().then(yes => { if (yes) { try { getAnalytics(fbApp); } catch(e){} } });
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   APP
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  /* [JS-01] CONFIG */
+  var LS_APPS  = 'modstore.apps.v9';
+  var LS_APP   = 'modstore.app.v9.';
+  var LS_THEME = 'modstore.theme';
+  var GEN_WAIT = 15;   // generating page seconds
+
+  /* [JS-02] STATE */
+  var state = {
+    apps: [],
+    loading: true,
+    error: null,
+    offline: false,
+    diagnostics: [],
+    query: '',
+    category: 'all',
+    view: 'home',
+    slug: null,
+    detail: null,
+    detailLoading: false,
+    genSlug: null,
+    genApp: null,
+    genStart: 0,
+    genReady: false,
+    genRaf: null,
+    heroIdx: 0,
+    heroTimer: null,
+    heroFeatured: []
+  };
+
+  /* [JS-03] HELPERS */
+  function $(s, r){ return (r || document).querySelector(s); }
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function esc(s){
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+  function safeUrl(u){
+    if (!u) return null;
+    try {
+      var url = new URL(String(u), location.href);
+      if (url.protocol === 'http:' || url.protocol === 'https:') return url.href;
+      return null;
+    } catch (e) { return null; }
+  }
+  function debounce(fn, ms){
+    var t;
+    return function(){
+      var a = arguments, c = this;
+      clearTimeout(t);
+      t = setTimeout(function(){ fn.apply(c, a); }, ms);
+    };
+  }
+  function logDiag(msg){
+    state.diagnostics.push(String(msg));
+    if (state.diagnostics.length > 20) state.diagnostics.shift();
+    try { console.warn('[ModStore]', msg); } catch(e){}
+  }
+  function showToast(msg){
+    var el = $('#toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(function(){ el.classList.remove('show'); }, 2600);
+  }
+
+  /* [JS-04] THEME */
+  function initTheme(){
+    var saved = null;
+    try { saved = localStorage.getItem(LS_THEME); } catch(e){}
+    var prefersDark = false;
+    try { prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; } catch(e){}
+    applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+  }
+  function applyTheme(t){
+    document.documentElement.setAttribute('data-theme', t);
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute('content', t === 'dark' ? '#080b10' : '#eef2f7');
+  }
+  function toggleTheme(){
+    var cur = document.documentElement.getAttribute('data-theme');
+    var next = cur === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    try { localStorage.setItem(LS_THEME, next); } catch(e){}
+  }
+
+  /* [JS-05] CACHE */
+  function readAppsCache(){
+    try {
+      var raw = localStorage.getItem(LS_APPS);
+      if (!raw) return null;
+      var d = JSON.parse(raw);
+      if (!d || !Array.isArray(d.apps) || !d.apps.length) return null;
+      return d;
+    } catch (e) { return null; }
+  }
+  function writeAppsCache(apps){
+    try { localStorage.setItem(LS_APPS, JSON.stringify({ ts: Date.now(), apps: apps })); } catch(e){}
+  }
+  function readAppCache(slug){
+    try {
+      var raw = localStorage.getItem(LS_APP + slug);
+      if (!raw) return null;
+      var d = JSON.parse(raw);
+      if (!d || !d.app) return null;
+      return d;
+    } catch (e) { return null; }
+  }
+  function writeAppCache(slug, app){
+    try { localStorage.setItem(LS_APP + slug, JSON.stringify({ ts: Date.now(), app: app })); } catch(e){}
+  }
+
+  /* [JS-06] NORMALISATION */
+  function normaliseApp(raw, fallbackSlug){
+    if (!raw || typeof raw !== 'object') return null;
+    var slug = String(
+      raw.slug || raw.id || raw.key || raw.package || fallbackSlug || ''
+    ).trim();
+    if (!slug) return null;
+    var name = String(raw.name || raw.title || raw.appName || raw.label || slug).trim();
+    var icon = safeUrl(raw.icon || raw.iconUrl || raw.image || raw.logo || raw.thumbnail || raw.img);
+    var description = String(raw.description || raw.shortDescription || raw.summary || raw.desc || '').trim();
+    var longDescription = String(raw.longDescription || raw.fullDescription || raw.about || raw.content || '').trim();
+    var version = raw.version ? String(raw.version).replace(/^v/i,'').trim() : null;
+    if (version === '') version = null;
+    var category = raw.category || raw.genre || raw.type || null;
+    if (category) category = String(category).trim();
+    var download = safeUrl(raw.download || raw.downloadUrl || raw.apk || raw.apkUrl || raw.file || raw.fileUrl || raw.link);
+    var screenshots = [];
+    if (Array.isArray(raw.screenshots)) screenshots = raw.screenshots.map(safeUrl).filter(Boolean);
+    else if (Array.isArray(raw.images)) screenshots = raw.images.map(safeUrl).filter(Boolean);
+    var features = [];
+    if (Array.isArray(raw.features)) features = raw.features.map(function(f){ return String(f).trim(); }).filter(Boolean);
+    else if (typeof raw.features === 'string') features = raw.features.split('\n').map(function(f){ return f.trim(); }).filter(Boolean);
+    return {
+      slug: slug, name: name, icon: icon,
+      description: description, longDescription: longDescription,
+      version: version, category: category,
+      developer: raw.developer ? String(raw.developer).trim() : (raw.author ? String(raw.author).trim() : null),
+      size: raw.size ? String(raw.size).trim() : (raw.fileSize ? String(raw.fileSize).trim() : null),
+      updated: raw.updated ? String(raw.updated).trim()
+             : (raw.updatedAt ? String(raw.updatedAt).trim()
+             : (raw.date ? String(raw.date).trim() : null)),
+      download: download, screenshots: screenshots, features: features,
+      changelog: raw.changelog ? String(raw.changelog).trim()
+               : (raw.whatsNew ? String(raw.whatsNew).trim() : null)
+    };
+  }
+
+  /* [JS-07] ICON MARKUP */
+  function iconMarkup(app, extra){
+    var letter = (app.name || '?').trim().charAt(0).toUpperCase() || '?';
+    var url = safeUrl(app.icon);
+    var cls = 'app-icon-wrap' + (extra ? ' ' + extra : '');
+    var h = '<div class="' + cls + '">';
+    h += '<span class="app-icon-fallback">' + esc(letter) + '</span>';
+    if (url) {
+      h += '<img class="app-icon" src="' + esc(url) + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">';
+    }
+    h += '</div>';
+    return h;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     [JS-08] FIREBASE LOADERS
+     ═══════════════════════════════════════════════════════════════════════ */
+  function loadApps(force){
+    var cache = readAppsCache();
+    if (cache && !force) {
+      state.apps = cache.apps;
+      state.loading = false;
+      render();
+    }
+    state.loading = !state.apps.length;
+
+    get(ref(db, 'apps')).then(function(snapshot){
+      if (!snapshot.exists()) throw new Error('Database me "apps" node khaali hai');
+      var data = snapshot.val();
+      var apps = [];
+      Object.keys(data).forEach(function(key){
+        var raw = data[key];
+        if (raw && typeof raw === 'object') {
+          var merged = Object.assign({}, raw);
+          if (!merged.slug) merged.slug = key;
+          var n = normaliseApp(merged, key);
+          if (n) apps.push(n);
+        }
+      });
+      if (!apps.length) throw new Error('Database me koi valid app nahi mila');
+      // Recent first (updated field ho to sort karo)
+      apps.sort(function(a, b){
+        if (!a.updated && !b.updated) return 0;
+        if (!a.updated) return 1;
+        if (!b.updated) return -1;
+        return String(b.updated).localeCompare(String(a.updated));
+      });
+      state.apps = apps;
+      state.loading = false;
+      state.error = null;
+      state.offline = false;
+      logDiag('Firebase se ' + apps.length + ' apps mile');
+      writeAppsCache(apps);
+      render();
+    }).catch(function(err){
+      logDiag('Firebase load fail: ' + err.message);
+      var cached = readAppsCache();
+      if (cached && cached.apps.length) {
+        state.apps = cached.apps;
+        state.loading = false;
+        state.error = null;
+        state.offline = true;
+        render();
+        return;
+      }
+      state.loading = false;
+      state.error = 'Store load nahi ho paya. ' + err.message;
+      render();
+    });
+  }
+
+  function loadAppDetail(slug){
+    state.detailLoading = true;
+    state.detail = null;
+    state.view = 'detail';
+    state.slug = slug;
+    render();
+
+    var cached = readAppCache(slug);
+    if (cached) { state.detail = cached.app; state.detailLoading = false; render(); }
+
+    get(ref(db, 'apps/' + slug)).then(function(snapshot){
+      if (!snapshot.exists()) throw new Error('App database me nahi mila');
+      var raw = snapshot.val();
+      var merged = Object.assign({}, raw);
+      if (!merged.slug) merged.slug = slug;
+      var app = normaliseApp(merged, slug);
+      if (!app) throw new Error('App data invalid hai');
+      state.detail = app;
+      state.detailLoading = false;
+      writeAppCache(slug, app);
+      render();
+    }).catch(function(err){
+      logDiag('Detail load fail: ' + err.message);
+      if (state.detail) {
+        state.detailLoading = false;
+        render();
+        return;
+      }
+      var listApp = state.apps.filter(function(a){ return a.slug === slug; })[0];
+      if (listApp) {
+        state.detail = normaliseApp(listApp, slug);
+        state.detailLoading = false;
+        render();
+      } else {
+        state.detail = null;
+        state.detailLoading = false;
+        render();
+      }
+    });
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     [JS-09] FILTER
+     ═══════════════════════════════════════════════════════════════════════ */
+  function getCategories(){
+    var map = Object.create(null);
+    for (var i = 0; i < state.apps.length; i++) {
+      var c = state.apps[i].category;
+      if (c) map[c] = (map[c] || 0) + 1;
+    }
+    return Object.keys(map).sort(function(a,b){ return map[b] - map[a]; });
+  }
+  function filteredApps(){
+    var q = state.query.trim().toLowerCase();
+    var cat = state.category;
+    var list = state.apps;
+    if (cat && cat !== 'all') {
+      list = list.filter(function(a){ return a.category && a.category.toLowerCase() === cat.toLowerCase(); });
+    }
+    if (q) {
+      list = list.filter(function(a){
+        return (a.name && a.name.toLowerCase().indexOf(q) !== -1) ||
+               (a.description && a.description.toLowerCase().indexOf(q) !== -1) ||
+               (a.category && a.category.toLowerCase().indexOf(q) !== -1) ||
+               (a.slug && a.slug.toLowerCase().indexOf(q) !== -1);
+      });
+    }
+    return list;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     [JS-10] RENDER DISPATCHER
+     ═══════════════════════════════════════════════════════════════════════ */
+  function render(){
+    if (state.view === 'generating') renderGenerating();
+    else if (state.view === 'detail') renderDetail();
+    else renderHome();
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     [JS-11] HOME
+     ═══════════════════════════════════════════════════════════════════════ */
+  function skeletonHome(){
+    var cards = '';
+    for (var i = 0; i < 8; i++) {
+      cards += '<div class="sk-card"><div class="sk sk-icon"></div><div class="sk sk-line"></div><div class="sk sk-line short"></div></div>';
+    }
+    return '<div class="sk sk-hero"></div>' +
+      '<div class="sk-chips">' + '<div class="sk sk-chip"></div>'.repeat(5) + '</div>' +
+      '<div class="sk sk-section-title"></div>' +
+      '<div class="grid">' + cards + '</div>';
+  }
+
+  function renderHome(){
+    var view = $('#view');
+    view.className = 'view view-home';
+    if (state.loading && !state.apps.length) { view.innerHTML = skeletonHome(); return; }
+    if (state.error && !state.apps.length) {
+      view.innerHTML = '<div class="empty-state fade-in"><div class="empty-icon">⚠️</div>' +
+        '<h2>Store load nahi ho paya</h2><p>' + esc(state.error) + '</p>' +
+        '<button class="btn-primary" id="retry-btn" type="button">Try again</button>' +
+        (state.diagnostics.length ? '<div class="diag">' + esc(state.diagnostics.join('\n')) + '</div>' : '') +
+        '</div>';
+      var rb = $('#retry-btn');
+      if (rb) rb.addEventListener('click', function(){ loadApps(true); });
+      return;
+    }
+    if (!state.apps.length) {
+      view.innerHTML = '<div class="empty-state fade-in"><div class="empty-icon">📦</div>' +
+        '<h2>Abhi koi app nahi hai</h2><p>Firebase Database ke "apps" node me data add karo.</p></div>';
+      return;
+    }
+    var q = state.query.trim();
+    var list = filteredApps();
+    var parts = [];
+    if (state.offline) parts.push('<div class="banner banner-warn">📡 Cached data dikha rahe hain — Firebase reachable nahi hai.</div>');
+    if (!q && state.category === 'all') parts.push(renderHero());
+    var cats = getCategories();
+    if (cats.length > 1 && !q) {
+      var chips = '<button class="cat' + (state.category === 'all' ? ' active' : '') + '" data-cat="all" type="button">All</button>';
+      for (var i = 0; i < cats.length; i++) {
+        var c = cats[i];
+        chips += '<button class="cat' + (state.category === c ? ' active' : '') + '" data-cat="' + esc(c) + '" type="button">' + esc(c) + '</button>';
+      }
+      parts.push('<div class="cats" id="cats">' + chips + '</div>');
+    }
+    if (q) parts.push('<div class="section-head"><h2>“' + esc(q) + '” ke results</h2><span class="count">' + list.length + '</span></div>');
+    else if (state.category !== 'all') parts.push('<div class="section-head"><h2>' + esc(state.category) + '</h2><span class="count">' + list.length + '</span></div>');
+    else parts.push('<div class="section-head"><h2>All apps</h2><span class="count">' + list.length + '</span></div>');
+    if (!list.length) {
+      parts.push('<div class="empty-state fade-in"><div class="empty-icon">🔍</div><h2>Koi app nahi mila</h2><p>Dusra search ya category try karo.</p></div>');
+    } else {
+      parts.push('<div class="grid fade-in">' + list.map(appCardHtml).join('') + '</div>');
+    }
+    view.innerHTML = parts.join('');
+    attachHomeHandlers();
+    if (!q && state.category === 'all') setupHero();
+  }
+
+  function appCardHtml(app){
+    var meta = [];
+    if (app.version) meta.push('<span>v' + esc(app.version) + '</span>');
+    if (app.category) {
+      if (meta.length) meta.push('<span class="dot">·</span>');
+      meta.push('<span class="cat-tag">' + esc(app.category) + '</span>');
+    }
+    return '<a class="app-card" href="/p/' + encodeURIComponent(app.slug) + '" data-link data-slug="' + esc(app.slug) + '">' +
+      iconMarkup(app) +
+      '<div class="app-name">' + esc(app.name) + '</div>' +
+      (meta.length ? '<div class="app-meta">' + meta.join('') + '</div>' : '') +
+      '</a>';
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     [JS-12] HERO CAROUSEL
+     ═══════════════════════════════════════════════════════════════════════ */
+  function pickFeatured(){
+    var withBoth = state.apps.filter(function(a){ return a.icon && a.description; });
+    var pool = withBoth.length >= 3 ? withBoth : state.apps.filter(function(a){ return a.icon; });
+    if (pool.length < 3) pool = state.apps;
+    return pool.slice(0, 5);
+  }
+  function renderHero(){
+    var featured = pickFeatured();
+    if (!featured.length) return '';
+    state.heroFeatured = featured;
+    var slides = featured.map(function(app, i){
+      var bg = app.icon ? esc(app.icon) : '';
+      var bgStyle = bg ? ' style="background-image:url(&quot;' + bg + '&quot;)"' : '';
+      var meta = [];
+      if (app.version) meta.push('<span class="chip-glass">v' + esc(app.version) + '</span>');
+      if (app.category) meta.push('<span class="chip-glass">' + esc(app.category) + '</span>');
+      return '<div class="hero-slide" data-i="' + i + '">' +
+        '<div class="hero-bg"' + bgStyle + '></div><div class="hero-shade"></div>' +
+        '<div class="hero-content">' +
+        (app.icon ? '<img class="hero-icon" src="' + esc(app.icon) + '" alt="" loading="' + (i === 0 ? 'eager' : 'lazy') + '" decoding="async" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">' : '') +
+        '<div class="hero-text"><span class="hero-badge"><span class="pulse"></span>Featured</span>' +
+        '<h2 class="hero-title">' + esc(app.name) + '</h2>' +
+        (app.description ? '<p class="hero-desc">' + esc(app.description) + '</p>' : '') +
+        (meta.length ? '<div class="hero-meta">' + meta.join('') + '</div>' : '') +
+        '<a class="hero-cta" href="/p/' + encodeURIComponent(app.slug) + '" data-link>' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>View app</a>' +
+        '</div></div></div>';
+    }).join('');
+    var dots = featured.map(function(_, i){
+      return '<button class="hero-dot' + (i === 0 ? ' active' : '') + '" data-i="' + i + '" type="button" aria-label="Slide ' + (i + 1) + '"></button>';
+    }).join('');
+    return '<section class="hero fade-in" id="hero" aria-roledescription="carousel" aria-label="Featured apps">' +
+      '<div class="hero-track" id="hero-track">' + slides + '</div>' +
+      '<button class="hero-nav hero-prev" id="hero-prev" type="button" aria-label="Previous">‹</button>' +
+      '<button class="hero-nav hero-next" id="hero-next" type="button" aria-label="Next">›</button>' +
+      '<div class="hero-dots" id="hero-dots">' + dots + '</div></section>';
+  }
+  function setupHero(){
+    var hero = $('#hero'); if (!hero) return;
+    var track = $('#hero-track');
+    var dots = $$('.hero-dot', hero);
+    var count = state.heroFeatured.length;
+    if (!track || count < 1) return;
+    state.heroIdx = 0;
+    function goTo(i){
+      if (count === 0) return;
+      state.heroIdx = ((i % count) + count) % count;
+      track.style.transform = 'translate3d(-' + (state.heroIdx * 100) + '%,0,0)';
+      for (var k = 0; k < dots.length; k++) dots[k].classList.toggle('active', k === state.heroIdx);
+    }
+    function next(){ goTo(state.heroIdx + 1); }
+    function prev(){ goTo(state.heroIdx - 1); }
+    function start(){ stop(); if (count > 1) state.heroTimer = setInterval(next, 5500); }
+    function stop(){ if (state.heroTimer) { clearInterval(state.heroTimer); state.heroTimer = null; } }
+    function restart(){ start(); }
+    var prevBtn = $('#hero-prev'), nextBtn = $('#hero-next');
+    if (prevBtn) prevBtn.addEventListener('click', function(){ prev(); restart(); });
+    if (nextBtn) nextBtn.addEventListener('click', function(){ next(); restart(); });
+    for (var d = 0; d < dots.length; d++) {
+      (function(idx){ dots[idx].addEventListener('click', function(){ goTo(idx); restart(); }); })(d);
+    }
+    var x0 = null, y0 = null, dx = 0;
+    hero.addEventListener('touchstart', function(e){
+      if (e.touches.length !== 1) return;
+      x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; stop();
+    }, { passive: true });
+    hero.addEventListener('touchmove', function(e){
+      if (x0 === null) return;
+      dx = e.touches[0].clientX - x0;
+      var dy = Math.abs(e.touches[0].clientY - y0);
+      if (Math.abs(dx) > 40 && Math.abs(dx) > dy) { if (e.cancelable) e.preventDefault(); }
+    }, { passive: false });
+    hero.addEventListener('touchend', function(){
+      if (x0 !== null && Math.abs(dx) > 45) { if (dx < 0) next(); else prev(); }
+      x0 = null; dx = 0; start();
+    });
+    hero.addEventListener('mouseenter', stop);
+    hero.addEventListener('mouseleave', start);
+    document.addEventListener('visibilitychange', function(){ if (document.hidden) stop(); else start(); });
+    goTo(0); start();
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     [JS-13] DETAIL
+     ═══════════════════════════════════════════════════════════════════════ */
+  function renderDetail(){
+    var view = $('#view');
+    view.className = 'view view-detail';
+    if (state.detailLoading && !state.detail) {
+      view.innerHTML = '<div style="padding:20px">' +
+        '<div class="sk" style="height:140px;border-radius:26px;margin-bottom:24px"></div>' +
+        '<div class="sk sk-line" style="height:30px;width:60%;margin:0 20px 14px"></div>' +
+        '<div class="sk sk-line short" style="margin:0 20px 24px;height:14px"></div>' +
+        '<div class="sk" style="height:52px;margin:0 20px 24px;border-radius:15px"></div>' +
+        '<div class="sk" style="height:90px;margin:0 20px;border-radius:18px"></div></div>';
+      return;
+    }
+    var app = state.detail;
+    if (!app) {
+      view.innerHTML = '<div class="empty-state fade-in"><div class="empty-icon">🔍</div>' +
+        '<h2>App nahi mila</h2><p>Shayad ye app hata diya gaya hai.</p>' +
+        '<a class="btn-primary" href="/appstore" data-link>Store pe wapas</a></div>';
+      return;
+    }
+    var iconUrl = safeUrl(app.icon);
+    var bgStyle = iconUrl ? ' style="background-image:url(&quot;' + esc(iconUrl) + '&quot;)"' : '';
+    var subParts = [];
+    if (app.developer) subParts.push('<span class="dev">' + esc(app.developer) + '</span>');
+    if (app.category) subParts.push('<span>' + esc(app.category) + '</span>');
+    if (app.version) subParts.push('<span>v' + esc(app.version) + '</span>');
+    var subLine = subParts.length ? subParts.join('<span class="sep">·</span>') : '';
+    var stats = [];
+    if (app.version) stats.push(['Version', 'v' + app.version]);
+    if (app.size) stats.push(['Size', app.size]);
+    if (app.updated) stats.push(['Updated', app.updated]);
+    if (app.category) stats.push(['Category', app.category]);
+    var statsHtml = '';
+    if (stats.length) {
+      statsHtml = '<div class="detail-stats">' + stats.slice(0, 4).map(function(s){
+        return '<div class="stat"><div class="stat-label">' + esc(s[0]) + '</div><div class="stat-value">' + esc(s[1]) + '</div></div>';
+      }).join('') + '</div>';
+    }
+    var downloadBtn = '<button class="btn-primary" id="download-btn" type="button" ' +
+      'data-slug="' + esc(app.slug) + '" aria-label="Download ' + esc(app.name) + '">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v14M5 12l7 7 7-7M5 21h14"/></svg>Download</button>';
+    var screenshotsHtml = '';
+    if (app.screenshots && app.screenshots.length) {
+      screenshotsHtml = '<div class="detail-section"><h2>Screenshots</h2><div class="shots">' +
+        app.screenshots.map(function(s){
+          return '<img class="shot" src="' + esc(s) + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">';
+        }).join('') + '</div></div>';
+    }
+    var desc = app.longDescription || app.description || '';
+    var descHtml = '';
+    if (desc) {
+      descHtml = '<div class="detail-section"><h2>Is app ke baare mein</h2>' +
+        '<p class="detail-desc clamped" id="desc-body">' + esc(desc) + '</p>' +
+        '<button class="read-more" id="read-more" type="button" hidden>Read more</button></div>';
+    }
+    var featuresHtml = '';
+    if (app.features && app.features.length) {
+      featuresHtml = '<div class="detail-section"><h2>Features</h2><ul class="feature-list">' +
+        app.features.map(function(f){ return '<li>' + esc(f) + '</li>'; }).join('') + '</ul></div>';
+    }
+    var changelogHtml = '';
+    if (app.changelog) {
+      changelogHtml = '<div class="detail-section"><h2>Naya kya hai</h2><div class="changelog">' + esc(app.changelog) + '</div></div>';
+    }
+    var banner = '';
+    if (state.offline) banner = '<div class="banner banner-warn" style="margin:14px 20px 0">📡 Cached data dikha rahe hain.</div>';
+    view.innerHTML =
+      '<div class="detail-hero"><div class="detail-hero-bg"' + bgStyle + '></div><div class="detail-hero-shade"></div>' +
+      '<div class="detail-topbar">' +
+      '<a class="back-btn" href="/appstore" data-link>' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>Back</a>' +
+      '<button class="detail-share" id="share-btn" type="button" aria-label="Share">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4M12 2v14"/></svg></button></div>' +
+      '<div class="detail-main">' + iconMarkup(app, 'detail-icon-wrap') +
+      '<div class="detail-info"><h1 class="detail-name">' + esc(app.name) + '</h1>' +
+      (subLine ? '<div class="detail-sub">' + subLine + '</div>' : '') + '</div></div></div>' +
+      banner +
+      '<div class="detail-actions">' + downloadBtn +
+      '<button class="btn-ghost" id="share-btn-2" type="button">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4M12 2v14"/></svg>Share</button></div>' +
+      statsHtml + descHtml + screenshotsHtml + featuresHtml + changelogHtml +
+      '<div style="height:40px"></div>';
+    attachDetailHandlers();
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     [JS-14] GENERATING PAGE
+     ═══════════════════════════════════════════════════════════════════════ */
+  function renderGenerating(){
+    var view = $('#view');
+    view.className = 'view view-generating';
+    var app = state.genApp;
+    if (!app) { state.view = 'home'; renderHome(); return; }
+    var elapsed = (performance.now() - state.genStart) / 1000;
+    var remaining = Math.max(0, GEN_WAIT - elapsed);
+    if (remaining <= 0) state.genReady = true;
+    var versionTxt = app.version ? 'v' + app.version : '';
+    var taglineParts = [];
+    if (versionTxt) taglineParts.push(versionTxt);
+    if (app.category) taglineParts.push(app.category);
+    taglineParts.push('Premium Unlocked');
+    var tagline = taglineParts.join(' · ');
+
+    var headerCard =
+      '<div class="gen-header-card">' +
+        '<div class="gen-app-name">' + esc(app.name) + (versionTxt ? ' ' + esc(versionTxt) : '') + '</div>' +
+        '<div class="gen-app-tagline">' + esc(tagline) + '</div>' +
+      '</div>';
+
+    var thanksHtml =
+      '<p class="gen-thanks">Thank you for downloading <span class="gen-hl">' + esc(app.name) +
+      '</span> from our site. Neeche available link hai — button dabate hi file automatically download shuru ho jayegi.</p>';
+
+    var fileName = app.name + (versionTxt ? ' ' + versionTxt : '') + ' MOD APK';
+    var progressPct = ((GEN_WAIT - remaining) / GEN_WAIT) * 100;
+    var progressCard =
+      '<div class="gen-progress-card" id="gen-loading"' + (state.genReady ? ' hidden' : '') + '>' +
+        '<div class="gen-file-name">' + esc(fileName) + '</div>' +
+        '<div class="gen-progress-track"><div class="gen-progress-fill" id="gen-fill" style="width:' + progressPct + '%"></div></div>' +
+        '<div class="gen-status">' +
+          '<span>Download link ban raha hai…</span>' +
+          '<span class="gen-count"><span id="gen-count">' + Math.ceil(remaining) + '</span>s</span>' +
+        '</div>' +
+        '<button class="gen-report" type="button" id="gen-report">⚠ Download kaam nahi kar raha? Report karo</button>' +
+      '</div>';
+
+    var readyCard =
+      '<div class="gen-ready-card" id="gen-ready"' + (state.genReady ? '' : ' hidden') + '>' +
+        '<div class="gen-ready-icon">✓</div>' +
+        '<h3 class="gen-ready-title">Download ready hai</h3>' +
+        '<p class="gen-ready-text">Neeche button dabao — download turant shuru hoga.</p>' +
+        '<button class="gen-download-btn" id="gen-download" type="button" ' +
+          'data-slug="' + esc(app.slug) + '">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v14M5 12l7 7 7-7M5 21h14"/></svg>' +
+          'Download APK' +
+        '</button>' +
+      '</div>';
+
+    var cancelBtn = '<button class="gen-cancel" id="gen-cancel" type="button">Cancel karke wapas jao</button>';
+    var noteHtml = '<div class="gen-note"><strong>Important:</strong> Install karne se pehle Android settings mein "Unknown sources se install" allow karna zaroori hai.</div>';
+
+    view.innerHTML =
+      '<div class="gen-page">' +
+        '<div class="gen-container">' +
+          headerCard + thanksHtml + progressCard + readyCard + cancelBtn + noteHtml +
+        '</div>' +
+      '</div>';
+
+    attachGeneratingHandlers();
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     [JS-15] HANDLERS
+     ═══════════════════════════════════════════════════════════════════════ */
+  function attachHomeHandlers(){
+    var cats = $('#cats');
+    if (cats) {
+      cats.addEventListener('click', function(e){
+        var btn = e.target.closest('.cat');
+        if (!btn) return;
+        state.category = btn.getAttribute('data-cat');
+        renderHome();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+  }
+
+  function attachDetailHandlers(){
+    var readMore = $('#read-more');
+    var descBody = $('#desc-body');
+    if (readMore && descBody) {
+      requestAnimationFrame(function(){
+        if (descBody.scrollHeight > descBody.clientHeight + 4) readMore.hidden = false;
+      });
+      readMore.addEventListener('click', function(){
+        var clamped = descBody.classList.toggle('clamped');
+        readMore.textContent = clamped ? 'Read more' : 'Show less';
+      });
+    }
+    var dlBtn = $('#download-btn');
+    if (dlBtn) {
+      dlBtn.addEventListener('click', function(){
+        var slug = dlBtn.getAttribute('data-slug') || state.slug;
+        startGenerating(slug);
+      });
+    }
+    var share = function(){
+      var url = location.href;
+      var title = state.detail ? state.detail.name : 'App';
+      if (navigator.share) navigator.share({ title: title, url: url }).catch(function(){});
+      else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function(){ showToast('Link copy ho gaya'); }).catch(function(){ showToast(url); });
+      else showToast(url);
+    };
+    var s1 = $('#share-btn'), s2 = $('#share-btn-2');
+    if (s1) s1.addEventListener('click', share);
+    if (s2) s2.addEventListener('click', share);
+  }
+
+  function attachGeneratingHandlers(){
+    var cancel = $('#gen-cancel');
+    if (cancel) cancel.addEventListener('click', cancelGenerating);
+    var report = $('#gen-report');
+    if (report) {
+      report.addEventListener('click', function(){ showToast('Report bhej diya. Thanks!'); });
+    }
+    var goBtn = $('#gen-download');
+    if (goBtn) {
+      goBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        handleFinalDownload(goBtn);
+      });
+    }
+    var escKeyHandler = function(e){
+      if (e.key === 'Escape' && state.view === 'generating') {
+        cancelGenerating();
+        document.removeEventListener('keydown', escKeyHandler);
+      }
+    };
+    document.addEventListener('keydown', escKeyHandler);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     [JS-16] GENERATING FLOW (RAF driven)
+     ═══════════════════════════════════════════════════════════════════════ */
+  function stopGeneratingTimer(){
+    if (state.genRaf) {
+      cancelAnimationFrame(state.genRaf);
+      state.genRaf = null;
+    }
+  }
+
+  function startGenerating(slug){
+    var app = state.detail;
+    if (!app || app.slug !== slug) {
+      app = state.apps.filter(function(a){ return a.slug === slug; })[0];
+    }
+    if (!app) { showToast('App nahi mila'); return; }
+    stopGeneratingTimer();
+    state.view = 'generating';
+    state.genSlug = slug;
+    state.genApp = app;
+    state.genStart = performance.now();
+    state.genReady = false;
+    if (location.pathname !== '/p/' + encodeURIComponent(slug)) {
+      history.pushState({ slug: slug, generating: true }, '', '/p/' + encodeURIComponent(slug));
+    }
+    renderGenerating();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    state.genRaf = requestAnimationFrame(tickGenerating);
+  }
+
+  function tickGenerating(){
+    if (state.view !== 'generating') return;
+    var elapsed = (performance.now() - state.genStart) / 1000;
+    var remaining = Math.max(0, GEN_WAIT - elapsed);
+    var progress = Math.min(100, (elapsed / GEN_WAIT) * 100);
+    var fillEl  = $('#gen-fill');
+    var countEl = $('#gen-count');
+    if (fillEl)  fillEl.style.width = progress + '%';
+    if (countEl) countEl.textContent = String(Math.ceil(remaining));
+    if (remaining <= 0) {
+      if (!state.genReady) {
+        state.genReady = true;
+        renderGenerating();
+      }
+      return;
+    }
+    state.genRaf = requestAnimationFrame(tickGenerating);
+  }
+
+  function cancelGenerating(){
+    stopGeneratingTimer();
+    state.genReady = false;
+    state.genStart = 0;
+    if (state.genSlug) {
+      state.view = 'detail';
+      var slug = state.genSlug;
+      state.genSlug = null;
+      state.genApp = null;
+      loadAppDetail(slug);
+    } else {
+      state.view = 'home';
+      state.genApp = null;
+      renderHome();
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     [JS-17] FINAL DOWNLOAD — now direct from Firebase `download` field
+     ═══════════════════════════════════════════════════════════════════════ */
+  function handleFinalDownload(btnEl){
+    var app = state.genApp;
+    if (!app) { showToast('App info nahi hai'); return; }
+    var url = safeUrl(app.download);
+    if (!url) {
+      showToast('Is app ke liye download link available nahi hai');
+      return;
+    }
+    if (btnEl) {
+      btnEl.classList.add('is-loading');
+      btnEl.disabled = true;
+    }
+    // Trigger download
+    window.location.href = url;
+    setTimeout(function(){
+      if (btnEl) {
+        btnEl.classList.remove('is-loading');
+        btnEl.disabled = false;
+      }
+    }, 1800);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     [JS-18] ROUTER
+     ═══════════════════════════════════════════════════════════════════════ */
+  function parseRoute(){
+    var path = location.pathname || '/';
+    var m = path.match(/^\/p\/([^\/?#]+)/);
+    if (m) return { view: 'detail', slug: decodeURIComponent(m[1]) };
+    return { view: 'home' };
+  }
+
+  function navigate(route, push){
+    stopGeneratingTimer();
+    state.genReady = false;
+    state.genSlug = null;
+    state.genApp = null;
+    if (route.view === 'detail') {
+      if (push) {
+        var target = '/p/' + encodeURIComponent(route.slug);
+        if (location.pathname !== target) history.pushState({ slug: route.slug }, '', target);
+      }
+      loadAppDetail(route.slug);
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    } else {
+      if (push && location.pathname !== '/appstore') history.pushState({}, '', '/appstore');
+      state.view = 'home';
+      state.slug = null;
+      state.detail = null;
+      renderHome();
+    }
+  }
+
+  function interceptLinks(){
+    document.addEventListener('click', function(e){
+      var a = e.target.closest('a');
+      if (!a) return;
+      if (a.id === 'download-btn' || a.id === 'gen-download') return;
+      if (a.target === '_blank') return;
+      if (!a.hasAttribute('data-link')) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      var href = a.getAttribute('href') || '';
+      if (!href) return;
+      e.preventDefault();
+      var m = href.match(/\/p\/([^\/?#]+)/);
+      if (m) navigate({ view: 'detail', slug: decodeURIComponent(m[1]) }, true);
+      else navigate({ view: 'home' }, true);
+    });
+  }
+
+  window.addEventListener('popstate', function(){
+    var route = parseRoute();
+    if (state.view === 'generating') {
+      stopGeneratingTimer();
+      state.genReady = false; state.genSlug = null; state.genApp = null;
+    }
+    navigate(route, false);
+  });
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     [JS-19] SEARCH
+     ═══════════════════════════════════════════════════════════════════════ */
+  function initSearch(){
+    var input = $('#search-input');
+    var clearBtn = $('#search-clear');
+    if (!input) return;
+    var onInput = debounce(function(){
+      state.query = input.value;
+      clearBtn.hidden = !input.value;
+      if (state.view === 'home') renderHome();
+    }, 140);
+    input.addEventListener('input', onInput);
+    input.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') {
+        input.value = ''; state.query = ''; clearBtn.hidden = true;
+        if (state.view === 'home') renderHome();
+        input.blur();
+      }
+    });
+    clearBtn.addEventListener('click', function(){
+      input.value = ''; state.query = ''; clearBtn.hidden = true;
+      if (state.view === 'home') renderHome();
+      input.focus();
+    });
+    document.addEventListener('keydown', function(e){
+      if (e.key === '/' && document.activeElement !== input) {
+        e.preventDefault(); input.focus();
+      }
+    });
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     [JS-20] INIT
+     ═══════════════════════════════════════════════════════════════════════ */
+  function init(){
+    initTheme();
+    var tt = $('#theme-toggle');
+    if (tt) tt.addEventListener('click', toggleTheme);
+    initSearch();
+    interceptLinks();
+    var route = parseRoute();
+    if (route.view === 'detail') {
+      if (!/^\/p\//.test(location.pathname)) {
+        history.replaceState({ slug: route.slug }, '', '/p/' + encodeURIComponent(route.slug));
+      }
+      loadApps(false);
+      loadAppDetail(route.slug);
+    } else {
+      if (location.pathname === '/') history.replaceState({}, '', '/appstore');
+      loadApps(false);
+    }
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+</body>
+</html>
